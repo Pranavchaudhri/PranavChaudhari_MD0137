@@ -1,0 +1,694 @@
+//	Enter the answer in any programming language you desire
+
+//DOMAIN Login.java we have to create package first and class table name login name of database 
+//first I must to create pckge and inside packge create class i have created the table name which is records in the datbase.this annotation @Table
+
+
+package com.example.Mobigic.Logindomain;
+ 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+ 
+@Entity
+@Table(name="login")
+public class Login {
+@Id
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    private Long id;
+    private String username;
+    private String password;
+ 
+    
+public Login()
+{
+}
+ 
+public Login(Long id, String username, String password) {
+this.id = id;
+this.username = username;
+this.password = password;
+}
+public Long getId() {
+return id;
+}
+public void setId(Long id) {
+this.id = id;
+}
+public String getUsername() {
+return username;
+}
+public void setUsername(String username) {
+this.username = username;
+}
+public String getPassword() {
+return password;
+}
+public void setPassword(String password) {
+this.password = password;
+}
+}
+
+        // we have to create controller name Logincontroller
+
+
+
+package com.example.Mobigic.LoginController;
+
+import java.util.Objects;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.example.Mobigic.Logindomain.Login;
+import com.example.Mobigic.Loginservice.LoginService;
+
+
+
+@Controller
+public class LoginController {
+	
+	@Autowired
+    private LoginService userService;
+
+                                   
+    @GetMapping("/login")
+           
+    public ModelAndView login() {
+    	ModelAndView mobigic = new ModelAndView("login");
+        mobigic.addObject("user", new Login());
+        return mobigic;
+    }
+
+    @PostMapping("/login")
+    public String login(@ModelAttribute("user") Login user ) {
+    	
+    	Login mobigictech = userService.login(user.getUsername(), user.getPassword());
+    	
+
+    	System.out.print(mobigictech);
+    	if(Objects.nonNull(mobigictech)) 
+    	{	
+  
+    		return "redirect:/";
+    	
+    		
+    	} else {
+    		return "redirect:/login";
+    		
+    	
+    	}
+
+}
+    
+    @RequestMapping(value = {"/logout"}, method = RequestMethod.POST)
+    public String logoutDo(HttpServletRequest request,HttpServletResponse response)
+    {
+    	
+	  
+        return "redirect:/login";
+    }
+
+}
+// we have to create class inside package Loginservice.java
+
+
+package com.example.Mobigic.Loginservice;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.example.Mobigic.Logindomain.Login;
+import com.example.Mobigic.Loginreposotory.LoginRepository;
+
+
+
+@Service
+public class LoginService {
+	
+	@Autowired
+	private LoginRepository repo;
+  
+  public Login login(String username, String password) {
+	  Login user = repo.findByUsernameAndPassword(username, password);
+  	return user;
+  }
+	
+
+}
+
+
+    // we have to create interface here LoginRepository.java inside Loginrepository
+
+
+@Repository
+public interface LoginRepository extends JpaRepository<Login, Long>{
+	Login findByUsernameAndPassword(String username, String password);
+
+}
+    //after that we mustto set database path and project confi. in application properties.
+
+spring.datasource.url=jdbc:mysql://localhost:3306/lindaschool?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+server.error.whitelabel.enabled=false
+server.port=9040
+spring.datasource.username=root
+spring.datasource.password=
+#logging.level.root=WARN
+spring.jpa.open-in-view=false
+spring.thymeleaf.cache=false
+
+spring.jpa.show-sql=true
+api.base.path = http://localhost:9080/login
+
+// we should create 2 web pages login and index.... inside template folder ...it is in html format
+
+                                      //Login.html
+
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/cosmo/bootstrap.min.css" />
+</head>
+<body>
+ 
+    
+    
+    <style type="text/css">
+    body,td,th{
+        color: #000000;
+    }
+    
+    body{
+        background-color: #F0F0F0;
+    }
+    
+    .style1
+    {
+        font-family: arial;
+        font-size: 14px;
+        padding: 12px;
+        line-height: 25px;
+        border-radius: 4px;
+        text-decoration: none;
+        
+    }
+    
+    .style2
+    {
+        font-family: arial;
+        font-size: 17px;
+        padding: 12px;
+        line-height: 25px;
+        border-radius: 4px;
+        text-decoration: none;
+        
+    }
+    
+    
+</style>
+
+    </head>
+    <body>
+        <div class="container">
+            <table width="100%" height="100%" border="0" cellpadding="0" align="center">
+            <tr>
+                <td align="center" valign="middle">
+                <table class="table-bordered" width="350" border="0" cellpadding="3"cellspacing="3" bgcolor="#ffffff">
+        
+			        <form action="#" th:action="@{/login}" th:object="${user}" method="post">
+			  
+			           
+			                  <tr>
+                                    <td height="25" colspan="2" align="left" valign="middle" bgcolor="#ffffff" class="style2">
+                                        <div align="center">
+                                            <strong>User Login</strong>
+                                        </div>
+                                        
+                                    </td>
+                                </tr>
+
+			            <tr>
+			                <td>Username</td>
+			                <td>
+				             
+				                <input type="text" th:field="*{username}" class="form-control" />
+			                </td>
+			            </tr>
+			            <tr>
+			                <td>Password</td>
+			                <td><input type="password" th:field="*{password}" class="form-control" /></td>
+			            </tr>
+			            <tr>
+			            <td colspan="2"><button type="submit" class="btn btn-info" align="right">Login</button> </td>
+			            </tr>
+			        
+			    </form>
+       </table>  
+         </td>   
+         </tr>  
+      </table> 
+     </div>  
+
+</body>
+</html>
+
+        //index.html
+
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/cosmo/bootstrap.min.css" />
+
+   <h1>Welcome to Mobigic</h1>
+   <form th:action="@{/logout}" method="post">
+        <input type="submit" class="btn btn-info" value="Logout" />
+    </form>
+</body>
+</html>
+
+
+
+
+//product.java if we want to add data member and member function then it combines encapsulation
+
+package productcrudapp.model;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+@Entity
+public class Product {
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private int id;
+	private String name;
+	private String description;
+	private long price;
+	
+	
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	public long getPrice() {
+		return price;
+	}
+	public void setPrice(long price) {
+		this.price = price;
+	}
+	public Product(int id, String name, String description, long price) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.description = description;
+		this.price = price;
+	}
+	public Product() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	@Override
+	public String toString() {
+		return "Product [id=" + id + ", name=" + name + ", description=" + description + ", price=" + price + "]";
+	}
+	
+	
+}
+
+
+//we must to create MainController for crud operation like create ,read,update and delete  and we access it from main method
+
+
+package productcrudapp.controller;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.view.RedirectView;
+
+import antlr.collections.List;
+import productcrudapp.dao.ProductDao;
+import productcrudapp.model.Product;
+import productcrudapp.model.Product;
+
+@Controller
+
+public class MainController {
+	@Autowired
+	private ProductDao productDao;
+	@RequestMapping("/")
+	public String home(Model m)
+	{
+		java.util.List<Product> products = productDao.getProducts();
+		
+		
+		m.addAttribute("products", products);
+		return "index";
+	}
+	
+	@RequestMapping("/add-product")
+public String addProduct(Model m)
+{
+	m.addAttribute("title","Add Product");
+return "add_product_form";
+
+
+}
+	//handle add product form
+	@RequestMapping(value="/handle-product",method=RequestMethod.POST)
+	public RedirectView handleProduct(@ModelAttribute Product product,HttpServletRequest request)
+	{
+		System.out.println(product);
+		productDao.createProduct(product);
+		RedirectView redirectView =new RedirectView();
+		redirectView.setUrl(request.getContextPath()+"/");
+		return redirectView;
+	}
+	@RequestMapping("/delete/{productId}")
+	public RedirectView deleteProduct(@PathVariable("productId")int productId,HttpServletRequest request) 
+	{
+		//int productId = 0;
+		this.productDao.deleteProduct(productId);
+		RedirectView redirectView =new RedirectView();
+	//	HttpServletRequest request = null;
+		redirectView.setUrl(request.getContextPath()+"/");
+		return redirectView ;
+	
+	}
+	@RequestMapping("/update/{productId}")
+	public String updateform(@PathVariable("productId")int pid,Model model)
+	{
+		Product product= this.productDao.getProduct(pid);
+        model.addAttribute("product",product);
+		return "update_form";
+	}
+	
+	
+}
+
+//pom properties
+
+#Generated by Maven Integration for Eclipse
+#Thu Nov 17 09:10:12 IST 2022
+m2e.projectLocation=F\:\\productcrudapp\\productcrudapp
+m2e.projectName=productcrudapp
+groupId=com.operation
+artifactId=productcrudapp
+version=0.0.1-SNAPSHOT
+
+// web.xml dependencies
+
+
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.operation</groupId>
+  <artifactId>productcrudapp</artifactId>
+  <packaging>war</packaging>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>productcrudapp Maven Webapp</name>
+  <url>http://maven.apache.org</url>
+  <dependencies>
+  
+  <!-- https://mvnrepository.com/artifact/org.springframework/spring-webmvc -->
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-webmvc</artifactId>
+    <version>5.3.21</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.springframework/spring-orm -->
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-orm</artifactId>
+    <version>5.3.21</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-core -->
+<dependency>
+    <groupId>org.hibernate</groupId>
+    <artifactId>hibernate-core</artifactId>
+    <version>5.6.10.Final</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+<dependency>
+    <groupId>mysql</groupId>
+    <artifactId>mysql-connector-java</artifactId>
+    <version>8.0.29</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/jstl/jstl -->
+<dependency>
+    <groupId>jstl</groupId>
+    <artifactId>jstl</artifactId>
+    <version>1.2</version>
+</dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+    
+  </dependencies>
+  <build>
+    <finalName>productcrudapp</finalName>
+  </build>
+</project>
+
+//productDao.java class 
+
+package productcrudapp.dao;
+
+import java.util.List;
+
+import javax.transaction.Transactional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.hibernate5.HibernateTemplate;
+import org.springframework.stereotype.Component;
+
+import productcrudapp.model.Product;
+
+@Component
+public class ProductDao {
+
+	@Autowired
+	private HibernateTemplate hibernateTemplate;
+
+	// create
+	@Transactional
+	public void createProduct(Product product) {
+
+		this.hibernateTemplate.saveOrUpdate(product);
+
+	}
+
+	// get all products
+	public List<Product> getProducts() {
+		List<Product> products = this.hibernateTemplate.loadAll(Product.class);
+		return products;
+	}
+
+	// delete the single product
+	@Transactional
+	public void deleteProduct(int pid) {
+		Product p = this.hibernateTemplate.load(Product.class, pid);
+		this.hibernateTemplate.delete(p);
+	}
+
+	// get the single product
+	public Product getProduct(int pid) {
+		return this.hibernateTemplate.get(Product.class, pid);
+	}
+}
+
+//add product form
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+
+<%@include file="./base.jsp" %>
+
+</head>
+<body>
+<div class="container mt-3">
+
+<div class="row">
+<div class="coL-md-6 offset-md-3">
+<h1 class="text-center mb-3">Fill the product detail</h1>
+<form action="handle-product" method="post">
+<div class="form-group">
+<label for="name">Product Name</label> <input type="text"
+class="form-control" id="name" aria-describedby="emailHelp"
+name="name" placeholder="Enter the product name here">
+</div>
+<div class="form-group">
+<label for="description">Product Description</label>
+<textarea class="form-control" name="description" id="description"
+rows="5" placeholder="Enter the Product description"></textarea>
+</div>
+
+<div class="form-group">
+<label for="price">Product Price</label> <input type="text"
+ placeholder="Enter the product price " name="price"
+class="form-control" id="price">
+</div>
+
+<div class="container text-center">
+<a href="${pageContext.request.contextPath }/"
+class="btn btn-outLine-danger">Back</a>
+<button type="submit"class="btn btn-primary">Add</button>
+
+</div>
+</form>
+</div>
+</div>
+</div>
+
+
+
+
+
+
+
+
+</body>
+</html>
+
+//spring servlet xml file
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd 
+     http://www.springframework.org/schema/tx
+    http://www.springframework.org/schema/tx/spring-tx.xsd   
+    ">
+	<tx:annotation-driven />
+
+	<context:component-scan
+		base-package="productcrudapp" />
+
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+		name="viewResolver">
+		<property name="prefix" value="/WEB-INF/views/" />
+		<property name="suffix" value=".jsp"></property>
+	</bean>
+
+
+
+	<!-- data source -->
+
+	<bean
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource"
+		name="ds">
+
+		<property name="driverClassName"
+			value="com.mysql.jdbc.Driver" />
+		<property name="url"
+			value="jdbc:mysql://localhost:3306/productcrudapp" />
+		<property name="username" value="root" />
+		<property name="password" value="cdac" />
+
+	</bean>
+
+
+	<!-- LocalSessionFactoryBean -->
+
+
+
+	<bean
+		class="org.springframework.orm.hibernate5.LocalSessionFactoryBean"
+		name="factory">
+
+		<!-- data source -->
+		<property name="dataSource" ref="ds"></property>
+
+		<!-- hibernate properties -->
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+			</props>
+		</property>
+
+		<!-- annotated classes -->
+		<property name="annotatedClasses">
+			<list>
+			<value>productcrudapp.model.Product</value>
+			</list>
+		</property>
+
+	</bean>
+
+
+	<bean class="org.springframework.orm.hibernate5.HibernateTemplate"
+		name="hibernateTemplate">
+		<property name="sessionFactory" ref="factory"></property>
+
+	</bean>
+
+
+	<bean
+		class="org.springframework.orm.hibernate5.HibernateTransactionManager"
+		name="transactionManager">
+		<property name="sessionFactory" ref="factory"></property>
+	</bean>
+
+</beans>
